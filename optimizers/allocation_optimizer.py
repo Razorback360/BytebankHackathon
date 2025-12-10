@@ -7,6 +7,8 @@ import os
 from dotenv import load_dotenv
 from decimal import Decimal
 from pydantic import BaseModel
+from enum import StrEnum
+import yfinance as yf
 
 load_dotenv(override=True)
 
@@ -15,11 +17,16 @@ class OptimizerResult(BaseModel):
     sharpe_ratio: float
     budget_allocation: dict[str, float]
 
+class StockMarket(StrEnum):
+    US = "US"
+    SA = "SR"
+
 class PortfolioOptimizer:
 
 
-    def __init__(self, tickers: list[str] ) -> None:
+    def __init__(self, tickers: list[str], stock_market: StockMarket) -> None:
         self.tickers = tickers
+        self.stock_market = stock_market
         self.dates = None
         tickers_df = self.__extract_data()
         self.normalized_df = self.__normalize_data(tickers_df)
@@ -28,32 +35,41 @@ class PortfolioOptimizer:
         self.n = len(self.tickers)
 
     
-    def __extract_data(self) -> None:
-
-        final_dates = None
-        prices_dict = {}
+    def __extract_data(self) -> pd.DataFrame:
+        """
+        Fetches historical data using yfinance.
+        - market: StockMarket Enum (US or SA).
+        """
+        # 1. Adjust tickers based on the selected market
+        formatted_tickers = []
         for ticker in self.tickers:
-            symbol = ticker.upper()
-            url = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&interval=5min&outputsize=compact&apikey={os.environ.get("ALPHA_VANTAGE_API_KEY")}'
-            r = requests.get(url)
-            data = r.json()
-            dates, prices = self._extract_date_prices(data)
-            prices_dict[ticker] = prices
-            if final_dates is None:
-                final_dates = dates
-        
-        return pd.DataFrame(prices_dict, index=pd.to_datetime(final_dates))
+            if self.stock_market == StockMarket.SA:
+                # Append suffix for Saudi market (e.g., 1120 -> 1120.SR)
+                formatted_tickers.append(f"{ticker}.{self.stock_market.value}")
+            else:
+                # Default for US (no suffix needed usually)
+                formatted_tickers.append(ticker)
+
+        # 2. Download data in batch (more efficient than looping)
+        # using 'auto_adjust=True' gets the Adjusted Close directly as 'Close'
+        print(f"Downloading data for: {formatted_tickers}")
+        data = yf.download(formatted_tickers, period="1y", auto_adjust=True, progress=False)
+
+        if len(self.tickers) == 1:
+
+            prices_df = pd.DataFrame(data['Close'])
+            prices_df.columns = self.tickers
+        else:
+            prices_df = data['Close']
             
-    
-    def _extract_date_prices(self, ticker_object):
-        data = ticker_object.get('Time Series (Daily)')
-        dates = list(data.keys())
-        prices = [float(value.get('4. close')) for value in data.values()]
-        return dates, prices
+            if self.stock_market == StockMarket.SA:
+                prices_df.columns = [col.replace(f".{self.stock_market.value}", "") for col in prices_df.columns]
+
+        # Ensure no missing data (forward fill then drop remaining)
+        return prices_df.ffill().dropna()
 
     def __normalize_data(self, tickers_df: pd.DataFrame) -> pd.DataFrame:
-        shifted_df = tickers_df.shift(periods=-1)
-        return (tickers_df - shifted_df) / shifted_df
+        return tickers_df.pct_change().dropna()
     
     def _minimize_risks(self, daily_reward, budget: Decimal, allow_short=False):
         """
@@ -164,6 +180,6 @@ class PortfolioOptimizer:
 
 
 if __name__ == '__main__':
-    optimizer = PortfolioOptimizer(['NVDA', 'GOOGL', 'AAPL'])
+    optimizer = PortfolioOptimizer(['GOOGL', 'NVDA', 'AAPL'], StockMarket.US)
     result  = optimizer.return_highest_sharpe_ratio(budget = Decimal('10000'))
     print(result)
