@@ -120,7 +120,7 @@ class PDFReportGenerator:
         data = [
             ["Metric", "Value", "Metric", "Value"], # Header
             ["Market Cap", fmt_num(f.market_cap), "P/E Ratio", f"{f.p_e_ratio:.2f}"],
-            ["Beta", f"{f.beta:.2f}", "Debt/Equity", f"{f.debt_to_equity:.2f}"],
+            ["Beta", f"{f.beta:.2f}", "Debt/Equity", f"{f.debt_to_equity:.2f}%"],
             ["Rev Growth (YoY)", f"{f.revenue_yoy_growth:.1%}", "Profit Growth", f"{f.net_income_yoy_growth:.1%}"]
         ]
         
