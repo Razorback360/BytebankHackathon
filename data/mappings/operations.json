@@ -1,0 +1,38 @@
+[
+    {
+        "operationSymbol": "eq",
+        "operationDescription": "equals"
+    },
+    {
+        "operationSymbol": "gt",
+        "operationDescription": "greater than"
+    },
+    {
+        "operationSymbol": "lt",
+        "operationDescription": "less than"
+    },
+    {
+        "operationSymbol": "gte",
+        "operationDescription": "greater than or equal to"
+    },
+    {
+        "operationSymbol": "lte",
+        "operationDescription": "less than or equal to"
+    },
+    {
+        "operationSymbol": "and",
+        "operationDescription": "logical AND"
+    },
+    {
+        "operationSymbol": "or",
+        "operationDescription": "logical OR"
+    },
+    {
+        "operationSymbol": "is-in",
+        "operationDescription": "is in list"
+    },
+    {
+        "operationSymbol": "btwn",
+        "operationDescription": "between two values"
+    }
+]

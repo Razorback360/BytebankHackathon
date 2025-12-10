@@ -1,0 +1,419 @@
+{
+  "eq_fields": {
+    "exchange": {
+      "display_name": "Exchange",
+      "description": "The stock exchange where the company is listed (e.g., NASDAQ, NYSE).",
+      "datatype": "string"
+    },
+    "industry": {
+      "display_name": "Industry",
+      "description": "The specific industry classification of the company (e.g., Semiconductors, Banks).",
+      "datatype": "string"
+    },
+    "peer_group": {
+      "display_name": "Peer Group",
+      "description": "A group of similar companies used for performance comparison.",
+      "datatype": "string"
+    },
+    "region": {
+      "display_name": "Region",
+      "description": "Geographical region where the company operates or is based.",
+      "datatype": "string"
+    },
+    "sector": {
+      "display_name": "Sector",
+      "description": "Broad market sector (e.g., Technology, Healthcare, Finance).",
+      "datatype": "string"
+    },
+    "description": "Fields related to basic equity information like exchange, industry, peer group, region, and sector."
+  },
+
+  "price": {
+    "eodprice": {
+      "display_name": "End of Day Price",
+      "description": "The official closing price of the stock for the trading day.",
+      "datatype": "number"
+    },
+    "fiftytwowkpercentchange": {
+      "display_name": "52-Week Price Change (%)",
+      "description": "Percentage change of stock price over the last 52 weeks.",
+      "datatype": "number"
+    },
+    "intradaymarketcap": {
+      "display_name": "Intraday Market Cap",
+      "description": "Real-time estimated total market value of the company's shares.",
+      "datatype": "number"
+    },
+    "intradayprice": {
+      "display_name": "Intraday Price",
+      "description": "Real-time trading price.",
+      "datatype": "number"
+    },
+    "intradaypricechange": {
+      "display_name": "Intraday Price Change",
+      "description": "Change in price since last close during the current trading day.",
+      "datatype": "number"
+    },
+    "lastclose52weekhigh.lasttwelvemonths": {
+      "display_name": "52-Week High (Last Close)",
+      "description": "Highest closing price in the past 52 weeks.",
+      "datatype": "number"
+    },
+    "lastclose52weeklow.lasttwelvemonths": {
+      "display_name": "52-Week Low (Last Close)",
+      "description": "Lowest closing price in the past 52 weeks.",
+      "datatype": "number"
+    },
+    "lastclosemarketcap.lasttwelvemonths": {
+      "display_name": "Market Cap (Last Close)",
+      "description": "Market capitalization based on last closing price.",
+      "datatype": "number"
+    },
+    "percentchange": {
+      "display_name": "Daily Percent Change",
+      "description": "Percentage change in stock price since previous close.",
+      "datatype": "number"
+    },
+    "description": "Fields related to stock price metrics including intraday and end-of-day prices, market capitalization, and price changes."
+  },
+
+  "trading": {
+    "avgdailyvol3m": {
+      "display_name": "Average Daily Volume (3M)",
+      "description": "Average number of shares traded daily over the last 3 months.",
+      "datatype": "number"
+    },
+    "beta": {
+      "display_name": "Beta",
+      "description": "Volatility relative to the overall market (1 = same volatility as market).",
+      "datatype": "number"
+    },
+    "dayvolume": {
+      "display_name": "Intraday Volume",
+      "description": "Total shares traded so far today.",
+      "datatype": "number"
+    },
+    "eodvolume": {
+      "display_name": "End of Day Volume",
+      "description": "Total number of shares traded by market close.",
+      "datatype": "number"
+    },
+    "pctheldinsider": {
+      "display_name": "Insider Ownership (%)",
+      "description": "Percentage of shares held by company insiders.",
+      "datatype": "number"
+    },
+    "pctheldinst": {
+      "display_name": "Institutional Ownership (%)",
+      "description": "Percentage of shares held by institutions.",
+      "datatype": "number"
+    },
+    "description": "Fields related to trading activity including volume, beta, and ownership percentages."
+  },
+
+  "short_interest": {
+    "days_to_cover_short.value": {
+      "display_name": "Days to Cover",
+      "description": "Number of days needed for short sellers to cover their positions at average volume.",
+      "datatype": "number"
+    },
+    "short_interest.value": {
+      "display_name": "Short Interest",
+      "description": "Total number of shares currently sold short.",
+      "datatype": "number"
+    },
+    "short_interest_percentage_change.value": {
+      "display_name": "Short Interest Change (%)",
+      "description": "Percentage change in short interest compared to previous period.",
+      "datatype": "number"
+    },
+    "short_percentage_of_float.value": {
+      "display_name": "% of Float Shorted",
+      "description": "Percentage of the tradable float that is shorted.",
+      "datatype": "number"
+    },
+    "short_percentage_of_shares_outstanding.value": {
+      "display_name": "% of Shares Outstanding Shorted",
+      "description": "Percentage of all available shares that are shorted.",
+      "datatype": "number"
+    },
+    "description": "Fields related to short interest metrics including days to cover, total short interest, and percentages of float and shares outstanding that are shorted."
+  },
+
+  "valuation": {
+    "bookvalueshare.lasttwelvemonths": {
+      "display_name": "Book Value Per Share",
+      "description": "Company's book value divided by number of shares.",
+      "datatype": "number"
+    },
+    "lastclosemarketcaptotalrevenue.lasttwelvemonths": {
+      "display_name": "Market Cap / Revenue",
+      "description": "Valuation ratio of market cap to total revenue.",
+      "datatype": "number"
+    },
+    "lastclosepriceearnings.lasttwelvemonths": {
+      "display_name": "P/E Ratio (Last Close)",
+      "description": "Price-to-earnings ratio using last close price.",
+      "datatype": "number"
+    },
+    "lastclosepricetangiblebookvalue.lasttwelvemonths": {
+      "display_name": "Price / Tangible Book Value",
+      "description": "Price relative to tangible book value.",
+      "datatype": "number"
+    },
+    "lastclosetevtotalrevenue.lasttwelvemonths": {
+      "display_name": "EV / Revenue",
+      "description": "Enterprise value relative to total revenue.",
+      "datatype": "number"
+    },
+    "pegratio_5y": {
+      "display_name": "PEG Ratio (5Y)",
+      "description": "Price-to-earnings growth ratio based on 5-year estimates.",
+      "datatype": "number"
+    },
+    "peratio.lasttwelvemonths": {
+      "display_name": "P/E Ratio",
+      "description": "Price-to-earnings ratio based on trailing 12 months.",
+      "datatype": "number"
+    },
+    "pricebookratio.quarterly": {
+      "display_name": "Price / Book Ratio",
+      "description": "Stock price relative to book value per share.",
+      "datatype": "number"
+    },
+    "description": "Fields related to valuation metrics including P/E ratios, price-to-book ratios, and enterprise value ratios."
+  },
+
+  "profitability": {
+    "consecutive_years_of_dividend_growth_count": {
+      "display_name": "Years of Dividend Growth",
+      "description": "Number of consecutive years the company has increased dividends.",
+      "datatype": "number"
+    },
+    "forward_dividend_per_share": {
+      "display_name": "Forward Dividend per Share",
+      "description": "Projected dividend per share for the upcoming year.",
+      "datatype": "number"
+    },
+    "forward_dividend_yield": {
+      "display_name": "Forward Dividend Yield",
+      "description": "Dividend yield based on expected future dividends.",
+      "datatype": "number"
+    },
+    "returnonassets.lasttwelvemonths": {
+      "display_name": "Return on Assets (ROA)",
+      "description": "Profit relative to total assets.",
+      "datatype": "number"
+    },
+    "returnonequity.lasttwelvemonths": {
+      "display_name": "Return on Equity (ROE)",
+      "description": "Profit relative to shareholder equity.",
+      "datatype": "number"
+    },
+    "returnontotalcapital.lasttwelvemonths": {
+      "display_name": "Return on Total Capital",
+      "description": "Return generated on all invested capital.",
+      "datatype": "number"
+    },
+    "description": "Fields related to profitability metrics including return on assets, return on equity, and dividend information."
+  },
+
+  "leverage": {
+    "ebitdainterestexpense.lasttwelvemonths": {
+      "display_name": "EBITDA / Interest Expense",
+      "description": "Interest coverage ratio using EBITDA.",
+      "datatype": "number"
+    },
+    "ebitinterestexpense.lasttwelvemonths": {
+      "display_name": "EBIT / Interest Expense",
+      "description": "Interest coverage ratio using EBIT.",
+      "datatype": "number"
+    },
+    "lastclosetevebit.lasttwelvemonths": {
+      "display_name": "EV / EBIT",
+      "description": "Enterprise value relative to EBIT.",
+      "datatype": "number"
+    },
+    "lastclosetevebitda.lasttwelvemonths": {
+      "display_name": "EV / EBITDA",
+      "description": "Enterprise value relative to EBITDA.",
+      "datatype": "number"
+    },
+    "ltdebtequity.lasttwelvemonths": {
+      "display_name": "Long-Term Debt / Equity",
+      "description": "Ratio of long-term debt to shareholder equity.",
+      "datatype": "number"
+    },
+    "netdebtebitda.lasttwelvemonths": {
+      "display_name": "Net Debt / EBITDA",
+      "description": "Company’s EBITDA relative to net debt load.",
+      "datatype": "number"
+    },
+    "totaldebtebitda.lasttwelvemonths": {
+      "display_name": "Total Debt / EBITDA",
+      "description": "Company’s EBITDA relative to total debt.",
+      "datatype": "number"
+    },
+    "totaldebtequity.lasttwelvemonths": {
+      "display_name": "Total Debt / Equity",
+      "description": "Total debt relative to shareholder equity.",
+      "datatype": "number"
+    },
+    "description": "Fields related to leverage metrics including debt ratios and interest coverage."
+  },
+
+  "liquidity": {
+    "altmanzscore...": {
+      "display_name": "Altman Z-Score",
+      "description": "Bankruptcy risk score — higher = safer.",
+      "datatype": "number"
+    },
+    "currentratio.lasttwelvemonths": {
+      "display_name": "Current Ratio",
+      "description": "Ability to pay short-term liabilities with short-term assets.",
+      "datatype": "number"
+    },
+    "operatingcashflowtocurrentliabilities.lasttwelvemonths": {
+      "display_name": "Operating Cash Flow / Current Liabilities",
+      "description": "Cash flow coverage of short-term liabilities.",
+      "datatype": "number"
+    },
+    "quickratio.lasttwelvemonths": {
+      "display_name": "Quick Ratio",
+      "description": "Liquid assets relative to current liabilities.",
+      "datatype": "number"
+    },
+    "description": "Fields related to liquidity metrics including current ratio, quick ratio, and cash flow coverage."
+  },
+
+  "income_statement": {
+    "ebit.lasttwelvemonths": {
+      "display_name": "EBIT",
+      "description": "Earnings before interest and taxes.",
+      "datatype": "number"
+    },
+    "ebitda.lasttwelvemonths": {
+      "display_name": "EBITDA",
+      "description": "Earnings before interest, taxes, depreciation, and amortization.",
+      "datatype": "number"
+    },
+    "ebitdamargin.lasttwelvemonths": {
+      "display_name": "EBITDA Margin",
+      "description": "EBITDA as a percentage of revenue.",
+      "datatype": "number"
+    },
+    "epsgrowth.lasttwelvemonths": {
+      "display_name": "EPS Growth",
+      "description": "Earnings per share growth rate.",
+      "datatype": "number"
+    },
+    "grossprofit.lasttwelvemonths": {
+      "display_name": "Gross Profit",
+      "description": "Revenue minus cost of goods sold.",
+      "datatype": "number"
+    },
+    "grossprofitmargin.lasttwelvemonths": {
+      "display_name": "Gross Profit Margin",
+      "description": "Gross profit as a percentage of revenue.",
+      "datatype": "number"
+    },
+    "netincomeis.lasttwelvemonths": {
+      "display_name": "Net Income",
+      "description": "Company’s earnings after all expenses.",
+      "datatype": "number"
+    },
+    "netincomemargin.lasttwelvemonths": {
+      "display_name": "Net Margin",
+      "description": "Net income as a percentage of revenue.",
+      "datatype": "number"
+    },
+    "totalrevenues.lasttwelvemonths": {
+      "display_name": "Total Revenue",
+      "description": "Total income from sales and operations.",
+      "datatype": "number"
+    },
+    "description": "Fields related to income statement metrics including EBIT, EBITDA, profit margins, and revenue."
+  },
+
+  "balance_sheet": {
+    "totalassets.lasttwelvemonths": {
+      "display_name": "Total Assets",
+      "description": "Total company-owned assets.",
+      "datatype": "number"
+    },
+    "totalcashandshortterminvestments.lasttwelvemonths": {
+      "display_name": "Cash and Short-Term Investments",
+      "description": "Highly liquid assets on the balance sheet.",
+      "datatype": "number"
+    },
+    "totalcurrentassets.lasttwelvemonths": {
+      "display_name": "Current Assets",
+      "description": "Assets that can be converted to cash within 12 months.",
+      "datatype": "number"
+    },
+    "totalcurrentliabilities.lasttwelvemonths": {
+      "display_name": "Current Liabilities",
+      "description": "Liabilities due within 12 months.",
+      "datatype": "number"
+    },
+    "totaldebt.lasttwelvemonths": {
+      "display_name": "Total Debt",
+      "description": "Short-term + long-term debt.",
+      "datatype": "number"
+    },
+    "description": "Fields related to balance sheet metrics including total assets, liabilities, and cash holdings."
+  },
+
+  "cash_flow": {
+    "capitalexpenditure.lasttwelvemonths": {
+      "display_name": "Capital Expenditure",
+      "description": "Money spent on physical assets (CapEx).",
+      "datatype": "number"
+    },
+    "cashfromoperations.lasttwelvemonths": {
+      "display_name": "Cash from Operations",
+      "description": "Cash generated from core business activities.",
+      "datatype": "number"
+    },
+    "leveredfreecashflow.lasttwelvemonths": {
+      "display_name": "Levered Free Cash Flow",
+      "description": "Cash available after paying interest and obligations.",
+      "datatype": "number"
+    },
+    "unleveredfreecashflow.lasttwelvemonths": {
+      "display_name": "Unlevered Free Cash Flow",
+      "description": "Cash available before paying interest (company-level free cash).",
+      "datatype": "number"
+    },
+    "description": "Fields related to cash flow metrics including cash from operations and free cash flow."
+  },
+
+  "esg": {
+    "environmental_score": {
+      "display_name": "Environmental Score",
+      "description": "Measures environmental impact and practices.",
+      "datatype": "number"
+    },
+    "esg_score": {
+      "display_name": "Total ESG Score",
+      "description": "Overall ESG risk and performance score.",
+      "datatype": "number"
+    },
+    "governance_score": {
+      "display_name": "Governance Score",
+      "description": "Measures company transparency, ethics, and governance.",
+      "datatype": "number"
+    },
+    "highest_controversy": {
+      "display_name": "Controversy Level",
+      "description": "Highest ESG controversy rating (higher = worse).",
+      "datatype": "number"
+    },
+    "social_score": {
+      "display_name": "Social Score",
+      "description": "Measures labor practices and social responsibility.",
+      "datatype": "number"
+    },
+    "description": "Fields related to ESG (Environmental, Social, Governance) scores and controversy levels."
+  }
+}

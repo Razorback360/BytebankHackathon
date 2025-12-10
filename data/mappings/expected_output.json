@@ -1,0 +1,6 @@
+{
+    "filterName": "This is where you put the key name of the filtering field",
+    "filterCategory": "This is where you put the category of the filtering field",
+    "filterValue": "This is where you put the value of the filtering field",
+    "operation": "This is where you put the operation for filtering, e.g., equals, greater than, less than"
+}
