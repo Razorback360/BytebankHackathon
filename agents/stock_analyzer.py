@@ -3,6 +3,7 @@ import yfinance as yf
 from pydantic import BaseModel
 from openai import OpenAI
 from dotenv import load_dotenv
+from enum import StrEnum
 
 # Load environment variables
 load_dotenv(override=True)
@@ -45,16 +46,22 @@ class StockAnalysisResult(BaseModel):
     peer_comparisons: list[StockPeerComparison]
     technical_indicators: StockTechnicalIndicators
 
+class StockMarket(StrEnum):
+    US = "US"
+    SA = "SR"
+
 # --- 2. The Logic Class ---
 class StockAnalyzer:    
     def __init__(self) -> None:
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         self.prompt_path = os.environ.get("STOCK_ANALYZER_PROMPT_PATH", "stock_analyzer_prompt.txt")
     
-    def fetch_real_data(self, ticker: str) -> dict:
+    def fetch_real_data(self, ticker: str, market: StockMarket= StockMarket.US) -> dict:
         """
         Fetches live data from Yahoo Finance to inject into the prompt.
         """
+        if market == StockMarket.SA:
+            ticker = f"{ticker}.{market.value}"
         print(f"Fetching live data for {ticker}...")
         stock = yf.Ticker(ticker)
         info = stock.info
@@ -91,9 +98,9 @@ class StockAnalyzer:
         
         return template.replace("{ticker}", ticker).replace("{financial_context}", context_str)
 
-    def analyze_stock(self, ticker: str) -> StockAnalysisResult:
+    def analyze_stock(self, ticker: str, market: StockMarket = StockMarket.US) -> StockAnalysisResult:
         # 1. Get the Raw Data
-        raw_data = self.fetch_real_data(ticker)
+        raw_data = self.fetch_real_data(ticker, market)
         
         # 2. Construct the Prompt with that data
         final_prompt = self._build_prompt(ticker, raw_data)
@@ -116,7 +123,7 @@ if __name__ == "__main__":
     analyzer = StockAnalyzer()
     
     # Example: Analyze Apple
-    result = analyzer.analyze_stock("AAPL")
+    result = analyzer.analyze_stock("AAPL", )
     
     # Print readable output
     print("\n" + "="*50)
