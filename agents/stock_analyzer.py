@@ -79,7 +79,7 @@ class StockAnalyzer:
             "200d_avg": info.get("twoHundredDayAverage"),
             "industry": info.get("industry"),
             "sector": info.get("sector"),
-            "score": info.get("recommendationMean", 0) * 20,  # Scale to 100
+            "score": f"{(5 - (info.get("recommendationMean", 0))) * 25:.2f}",  # Scale to 100
         }
         return data
 

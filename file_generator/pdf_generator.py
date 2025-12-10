@@ -105,7 +105,7 @@ class PDFReportGenerator:
             borderPadding=10,
             borderRadius=5
         )
-        return Paragraph(f"AI Conviction Score: {score}/100", score_style)
+        return Paragraph(f"Stock Analysts Conviction Score: {score}/100", score_style)
 
     def _create_financial_table(self):
         """Creates a formatted table for key financials."""
@@ -213,8 +213,8 @@ class PDFReportGenerator:
         return buffer
 
 if __name__ == "__main__":
-    ticker = "2222"
-    market = StockMarket.SA
+    ticker = "GOOGL"
+    market = StockMarket.US
     # 1. Run the AI Analysis
     print(f"--- Starting Analysis for {ticker} ---")
     analyzer = StockAnalyzer()

@@ -107,3 +107,5 @@ def logout(current_user: User = Depends(get_current_user)):
     Logout user (client should discard tokens).
     """
     return MessageResponse(message="Successfully logged out")
+
+@router.post()

@@ -62,6 +62,6 @@ class NLPToFilterAgent:
 
 if __name__ == "__main__":
     agent = NLPToFilterAgent()
-    nlp_input = "Find stocks with a low market cap ."
-    result = agent.filter_stocks(nlp_input)
+    nlp_input = "Find stocks with a low market cap with a low debt to equity ratio ."
+    result = agent.filter_stocks(nlp_input, StockMarket.SA)
     print(result)

@@ -16,6 +16,8 @@ class OptimizerResult(BaseModel):
     weights: dict[str,float]
     sharpe_ratio: float
     budget_allocation: dict[str, float]
+    target_return: float
+    volatility: float
 
 class StockMarket(StrEnum):
     US = "US"
@@ -174,7 +176,10 @@ class PortfolioOptimizer:
         return OptimizerResult(
             weights=best_portfolio['weights'] if best_portfolio else {},
             sharpe_ratio=max_sharpe_ratio,
-            budget_allocation=allocation_budget if allocation_budget else {}
+            budget_allocation=allocation_budget if allocation_budget else {},
+            target_return=best_portfolio.get("target_return"),
+            volatility=best_portfolio.get("daily_variance") * np.sqrt(252)
+            
         )
         
 
