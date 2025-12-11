@@ -88,7 +88,7 @@ class PortfolioOptimizer:
             
             # 2. Download data in batch (more efficient than looping)
             # using 'auto_adjust=True' gets the Adjusted Close directly as 'Close'
-            data = yf.download(formatted_tickers, period="3y", auto_adjust=True, progress=False)
+            data = yf.download(formatted_tickers, period="1y", auto_adjust=True, progress=False)
             logger.debug("Downloaded data shape: %s", data.shape)
 
             if len(self.tickers) == 1:
