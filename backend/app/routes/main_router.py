@@ -183,8 +183,8 @@ def get_stock_metadata(ticker_symbol: str) -> StockMetaData:
             sector=info.get('sector', 'Unknown Sector'),
             
             # fast_info provides floats, convert to Decimal
-            price=to_decimal(current_price).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
-            change=to_decimal(price_change).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+            price=to_decimal(current_price).quantize(Decimal("0.01")),
+            change=to_decimal(price_change).quantize(Decimal("0.01")),
             
             # info['trailingPE'] can be None for unprofitable companies
             p_e=to_decimal(info.get('trailingPE'), default=0.0).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
@@ -213,10 +213,10 @@ async def screen_stocks(request: ScreenerRequest):
         # 2. Get Filter Criteria from NLP
         filter_response = agent.filter_stocks(request.query, market=market_enum)
         
-        print(f"Parsed Filters: {filter_response.filters}")
+        print(f"Parsed Filters: {filter_response.get("filters")}")
         
         # 3. Build EquityQuery from filters
-        equity_query = build_equity_query(filter_response.filters, request.market)
+        equity_query = build_equity_query(filter_response.get("filters"), request.market)
         
         print(f"EquityQuery: {equity_query}")
         

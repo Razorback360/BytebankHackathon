@@ -318,7 +318,6 @@ class PeerGroup(StrEnum):
 
 class NumericField(StrEnum):
     # Price
-    PRICE = "price"
     EODPRICE = "eodprice"
     FIFTYTWOWKPERCENTCHANGE = "fiftytwowkpercentchange"
     INTRADAYMARKETCAP = "intradaymarketcap"
@@ -336,7 +335,6 @@ class NumericField(StrEnum):
     EODVOLUME = "eodvolume"
     PCTHELDINSIDER = "pctheldinsider"
     PCTHELDINST = "pctheldinst"
-    SHORT_INTEREST = "short_interest"
     DAYS_TO_COVER_SHORT_VALUE = "days_to_cover_short.value"
     SHORT_INTEREST_VALUE = "short_interest.value"
     SHORT_INTEREST_PERCENTAGE_CHANGE_VALUE = "short_interest_percentage_change.value"
