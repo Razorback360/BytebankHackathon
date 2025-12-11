@@ -285,7 +285,7 @@ class PortfolioOptimizer:
                 weights=best_portfolio['weights'] if best_portfolio else {},
                 sharpe_ratio=max_sharpe_ratio * np.sqrt(252),
                 budget_allocation=allocation_budget if allocation_budget else {},
-                target_return=best_portfolio.get("target_return"),
+                target_return=best_portfolio.get("target_return") * 252,
                 volatility=np.sqrt(best_portfolio.get("variance") * 252)
             )
             
