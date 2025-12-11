@@ -88,7 +88,7 @@ class PortfolioOptimizer:
             
             # 2. Download data in batch (more efficient than looping)
             # using 'auto_adjust=True' gets the Adjusted Close directly as 'Close'
-            data = yf.download(formatted_tickers, period="1y", auto_adjust=True, progress=False)
+            data = yf.download(formatted_tickers, period="3y", auto_adjust=True, progress=False)
             logger.debug("Downloaded data shape: %s", data.shape)
 
             if len(self.tickers) == 1:
@@ -283,10 +283,10 @@ class PortfolioOptimizer:
             
             result = OptimizerResult(
                 weights=best_portfolio['weights'] if best_portfolio else {},
-                sharpe_ratio=max_sharpe_ratio,
+                sharpe_ratio=max_sharpe_ratio * np.sqrt(252),
                 budget_allocation=allocation_budget if allocation_budget else {},
                 target_return=best_portfolio.get("target_return"),
-                volatility=best_portfolio.get("variance") * np.sqrt(252)
+                volatility=np.sqrt(best_portfolio.get("variance") * 252)
             )
             
             logger.info("Returning OptimizerResult with sharpe_ratio=%s, volatility=%s", result.sharpe_ratio, result.volatility)
