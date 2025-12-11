@@ -9,6 +9,13 @@ import io
 
 # Import your custom classes
 # Adjust imports based on your actual directory structure
+import sys
+from pathlib import Path
+
+# Add the parent directory to the path so we can import from agents, optimizers, etc.
+backend_dir = Path(__file__).resolve().parent.parent.parent.parent
+sys.path.insert(0, str(backend_dir))
+from agents.nlp_to_filter_agent import StockMarket
 from agents.nlp_to_filter_agent import NLPToFilterAgent, StockMarket as FilterMarket, FilterObject
 from agents.stock_analyzer import StockAnalyzer, StockMarket as AnalyzerMarket, StockAnalysisResult
 from optimizers.allocation_optimizer import PortfolioOptimizer, StockMarket as OptimizerMarket
@@ -20,24 +27,24 @@ router = APIRouter()
 
 class ScreenerRequest(BaseModel):
     query: str
-    market: str = "US"  # "US" or "SR"
+    market: StockMarket = StockMarket.US  # "US" or "SR"
 
 class OptimizerRequest(BaseModel):
     tickers: List[str]
-    market: str = "US"
+    market: StockMarket = StockMarket.US
     budget: float = 10000.0
 
 class AnalysisRequest(BaseModel):
     ticker: str
-    market: str = "US"
+    market: StockMarket = StockMarket.US
 
 class PDFRequest(BaseModel):
     ticker: str
-    market: str = "US"
+    market: StockMarket = StockMarket.US
 
 # --- Helper to resolve Market Enums ---
 # Since different files defined their own Enums, we map string to the specific Enum needed
-def get_market_enum(market_str: str, enum_cls):
+def get_market_enum(market_str: str, enum_cls) -> StockMarket:
     market_str = market_str.upper()
     if market_str == "US":
         return enum_cls.US
@@ -100,8 +107,14 @@ def build_equity_query(filters: List[FilterObject], market: str) -> EquityQuery:
     
     # Convert each filter to an EquityQuery
     for f in filters:
+        # Remove category prefix (e.g., "price.intradaymarketcap" -> "intradaymarketcap")
+        field_name = f.filterName.split('.')[-1] if '.' in f.filterName else f.filterName
+        
+        # Skip exchange filters - we already hardcode them based on market
+        if field_name.lower() == 'exchange':
+            continue
+        
         op_symbol = get_operation_symbol(f.operation)
-        field_name = f.filterName
         value = parse_filter_value(f.filterValue)
         
         if op_symbol == "btwn":
@@ -120,7 +133,7 @@ def build_equity_query(filters: List[FilterObject], market: str) -> EquityQuery:
     # If only one filter (including exchange), return it directly
     if len(query_parts) == 1:
         return query_parts[0]
-    
+    print("Query Parts:", query_parts)
     # Combine all filters with AND
     return EquityQuery('and', query_parts)
 
@@ -133,7 +146,7 @@ async def screen_stocks(request: ScreenerRequest):
     try:
         # 1. Initialize Agent
         agent = NLPToFilterAgent()
-        market_enum = get_market_enum(request.market, FilterMarket)
+        market_enum = get_market_enum(request.market, StockMarket)
         
         # 2. Get Filter Criteria from NLP
         filter_response = agent.filter_stocks(request.query, market=market_enum)
@@ -146,9 +159,9 @@ async def screen_stocks(request: ScreenerRequest):
         print(f"EquityQuery: {equity_query}")
         
         # 4. Execute the screener query
-        screener = yf.Screener()
-        screener.set_predefined_body(equity_query)
-        result = screener.response
+        screener = yf.screen(equity_query, count=250)
+        result = screener
+        print(f"Screener Result: {result}")
         
         # 5. Extract tickers from the result
         tickers = []
@@ -171,7 +184,7 @@ async def optimize_portfolio(request: OptimizerRequest):
     """
     try:
         # 1. Resolve Market Enum
-        market_enum = get_market_enum(request.market, OptimizerMarket)
+        market_enum = get_market_enum(request.market, StockMarket)
         
         # 2. Initialize Optimizer
         # Note: This will trigger yfinance downloads
@@ -193,7 +206,7 @@ async def analyze_stock(request: AnalysisRequest):
     Takes a single ticker -> Returns AI Analysis (Financials, SWOT, Outlook).
     """
     try:
-        market_enum = get_market_enum(request.market, AnalyzerMarket)
+        market_enum = get_market_enum(request.market, StockMarket)
         
         analyzer = StockAnalyzer()
         result = analyzer.analyze_stock(request.ticker, market=market_enum)
@@ -211,7 +224,7 @@ async def generate_pdf_report(request: PDFRequest):
     Takes a single ticker -> Runs Analysis -> Generates PDF -> Returns File Stream.
     """
     try:
-        market_enum = get_market_enum(request.market, AnalyzerMarket)
+        market_enum = get_market_enum(request.market, StockMarket)
         
         # 1. Run Analysis
         analyzer = StockAnalyzer()
