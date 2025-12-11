@@ -200,7 +200,7 @@ def get_stock_metadata(ticker_symbol: str) -> StockMetaData:
         raise e    
 
 # --- 1. Screener Endpoint ---
-@router.post("/screen", response_model=List[str])
+@router.post("/screen", response_model=ScreenerResponse)
 async def screen_stocks(request: ScreenerRequest):
     """
     Takes natural language query -> Agents parse filters -> Returns Tickers.
@@ -251,6 +251,8 @@ async def screen_stocks(request: ScreenerRequest):
             
             # Filter out any failures (None values)
             tickers = [r for r in results if r is not None]
+            if request.market == StockMarket.SA:
+                tickers = [r.split(".")[0] if "." in r else r for r in tickers]
         else:
             tickers = []
         # te
