@@ -509,7 +509,7 @@ class NLPToFilterAgent:
             
         return template.replace("{fields}", json.dumps(self.json_entries)).replace("{nlp_input}", nlp_input)
 
-    def filter_stocks(self, nlp_input: str, market: StockMarket= StockMarket.US) -> AgentFilterResponse:
+    def filter_stocks(self, nlp_input: str, market: StockMarket= StockMarket.US) -> dict:
         final_prompt = self._build_prompt(nlp_input)
         
         if market == StockMarket.SA:
@@ -526,7 +526,7 @@ class NLPToFilterAgent:
             response_format=AgentFilterResponse
         )
         
-        return response.choices[0].message.parsed
+        return response.choices[0].message.parsed.model_dump(mode="json", exclude_none=True)
 
 # ==========================================
 # 5. EXECUTION
@@ -540,10 +540,10 @@ if __name__ == "__main__":
     try:
         result = agent.filter_stocks(nlp_input, StockMarket.US)
         print("--- Result ---")
-        for f in result.filters:
-            print(f"Filter: {f.filterName} | Value: {f.filterValue} | Operation: {f.operation}")
+        for f in result.get("filters"):
+            print(f"Filter: {f.get("filterName")} | Value: {f.get("filterValue")} | Operation: {f.get("operation")}")
         
-        print(f"SQL Query: {result.sqlQuery}")
+        print(f"SQL Query: {result.get("sqlQuery")}")
             
     except Exception as e:
         print(f"Error: {e}")

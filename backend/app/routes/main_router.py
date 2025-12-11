@@ -121,23 +121,23 @@ def build_equity_query(filters: List[FilterObject], market: str) -> EquityQuery:
     # Convert each filter to an EquityQuery
     for f in filters:
         # Remove category prefix (e.g., "price.intradaymarketcap" -> "intradaymarketcap")
-        field_name = f.filterName.split('.')[-1] if '.' in f.filterName else f.filterName
+        field_name = f.get("filterName")
         
         # Skip exchange filters - we already hardcode them based on market
         if field_name.lower() == 'exchange':
             continue
         
-        op_symbol = get_operation_symbol(f.operation)
-        value = parse_filter_value(f.filterValue)
+        op_symbol = get_operation_symbol(f.get("operation"))
+        value = parse_filter_value(f.get("filterValue"))
         
         if op_symbol == "btwn":
             # Between requires two values - assume comma-separated
-            values = [parse_filter_value(v.strip()) for v in f.filterValue.split(',')]
+            values = [parse_filter_value(v.strip()) for v in f.get("filterValue").split(',')]
             if len(values) == 2:
                 query_parts.append(EquityQuery(op_symbol, [field_name, values[0], values[1]]))
         elif op_symbol == "is-in":
             # Is-in requires a list of values
-            values = [v.strip() for v in f.filterValue.split(',')]
+            values = [v.strip() for v in f.get("filterValue").split(',')]
             query_parts.append(EquityQuery(op_symbol, [field_name] + values))
         else:
             # Standard comparison operators
