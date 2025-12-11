@@ -187,10 +187,9 @@ def get_stock_metadata(ticker_symbol: str) -> StockMetaData:
             change=to_decimal(price_change).quantize(Decimal("0.01")),
             
             # info['trailingPE'] can be None for unprofitable companies
-            p_e=to_decimal(info.get('trailingPE'), default=0.0).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
-            
+            p_e=to_decimal(info.get('trailingPE'), default=0.0).quantize(Decimal("0.01"))
             # Market Cap is usually a large integer/float
-            cap=to_decimal(info.get('marketCap'), default=0.0).quantize(Decimal("1.00"), rounding=ROUND_HALF_UP)
+            cap=to_decimal(info.get('marketCap'), default=0.0).quantize(Decimal("1.00"))
         )
 
     except Exception as e:
