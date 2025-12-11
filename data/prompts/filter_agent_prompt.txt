@@ -85,6 +85,12 @@ The following JSON defines the ONLY fields you are allowed to use. You must matc
   }
 ]
 
+You are also going to output an sqlQuery string (I was too lazy to include it in the example output)
+The sqlQuery is not going to be used for actual querying, but for display on the frontend because it looks cool.
+Always use a SELECT operation from a "stocks" table. Incorporate filters through the WHERE subject.
+You do not have to use the same strings from the filters generated. It needs to be good looking.
+So instead of peratio.lasttwelvemonths just replace it with P/E and ebidta1yrgrowth with EBIDTA, etc....
+
 ### EDGE CASES
 - If the user asks for something not in the schema (e.g., "CEO name"), ignore that part of the request.
 - If the user implies a filter without a specific number (e.g., "High growth"), use reasonable defaults based on financial standards (e.g., Revenue Growth > 20%) or ignore if ambiguous.

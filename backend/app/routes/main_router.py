@@ -42,6 +42,19 @@ class PDFRequest(BaseModel):
     ticker: str
     market: StockMarket = StockMarket.US
 
+class StockMetaData(BaseModel):
+    symbol: str
+    company: str
+    sector: str
+    price: Decimal
+    change: Decimal
+    p_e: Decimal
+    cap: Decimal
+
+class ScreenerResponse(BaseModel):
+    data: list[StockMetaData]
+    sqlQuery: str
+
 # --- Helper to resolve Market Enums ---
 # Since different files defined their own Enums, we map string to the specific Enum needed
 def get_market_enum(market_str: str, enum_cls) -> StockMarket:
@@ -137,6 +150,55 @@ def build_equity_query(filters: List[FilterObject], market: str) -> EquityQuery:
     # Combine all filters with AND
     return EquityQuery('and', query_parts)
 
+def get_stock_metadata(ticker_symbol: str) -> StockMetaData:
+    """
+    Fetches stock metadata for a given ticker symbol using yfinance.
+    """
+    try:
+        ticker = yf.Ticker(ticker_symbol)
+        
+        # .fast_info is often faster/more reliable for price data than .info
+        current_price = ticker.fast_info.last_price
+        previous_close = ticker.fast_info.previous_close
+        
+        # .info dictionary contains the metadata
+        info = ticker.info
+        
+        # Calculate change (Price - Prev Close)
+        if current_price and previous_close:
+            price_change = current_price - previous_close
+        else:
+            price_change = 0.0
+
+        # Helper to safely convert float/None to Decimal
+        def to_decimal(value, default=0.0):
+            if value is None:
+                return Decimal(str(default))
+            # Convert to string first to avoid floating point arithmetic artifacts
+            return Decimal(str(value))
+
+        return StockMetaData(
+            symbol=info.get('symbol', ticker_symbol.upper()),
+            company=info.get('shortName', 'Unknown Company'),
+            sector=info.get('sector', 'Unknown Sector'),
+            
+            # fast_info provides floats, convert to Decimal
+            price=to_decimal(current_price).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+            change=to_decimal(price_change).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+            
+            # info['trailingPE'] can be None for unprofitable companies
+            p_e=to_decimal(info.get('trailingPE'), default=0.0).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+            
+            # Market Cap is usually a large integer/float
+            cap=to_decimal(info.get('marketCap'), default=0.0).quantize(Decimal("1.00"), rounding=ROUND_HALF_UP)
+        )
+
+    except Exception as e:
+        # In a real app, you might raise a custom HTTP exception or log this
+        print(f"Error fetching data for {ticker_symbol}: {e}")
+        # Return empty/zeroed object or re-raise
+        raise e    
+
 # --- 1. Screener Endpoint ---
 @router.post("/screen", response_model=List[str])
 async def screen_stocks(request: ScreenerRequest):
@@ -166,9 +228,12 @@ async def screen_stocks(request: ScreenerRequest):
         # 5. Extract tickers from the result
         tickers = []
         if result and 'quotes' in result:
-            tickers = [quote['symbol'] for quote in result['quotes']]
+            tickers = [get_stock_metadata(quote['symbol']) for quote in result['quotes']]
         
-        return tickers
+        return ScreenerResponse(
+            data=tickers,
+            sqlQuery= filter_response.sqlQuery
+        )
 
     except Exception as e:
         import traceback
