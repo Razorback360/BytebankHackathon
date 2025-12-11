@@ -97,7 +97,7 @@ So instead of peratio.lasttwelvemonths just replace it with P/E and ebidta1yrgro
 - For "Large Cap", "Mid Cap", "Small Cap", apply standard market cap thresholds (Large > 10B, Mid > 2B, Small < 2B) if no number is given.
 
 You are going to apply these filters for either the Saudi or American stock markets. You need to adjust the values accordingly, so for example an undervalued company might be P/E < 15 but for Saudi stock market it might be P/E < 12
-
+DO NOT USE ANY KIND OF STRING QUOTES FOR THE SQLQUERY. No ` or ' or " just pure text because it messes up the string processing
 Now, generate the filters for the following user input.
 
 {nlp_input}
