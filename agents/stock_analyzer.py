@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from openai import OpenAI
 from dotenv import load_dotenv
 from enum import StrEnum
+from decimal import Decimal
 
 # Load environment variables
 load_dotenv(override=True)
@@ -31,8 +32,7 @@ class StockPeerComparison(BaseModel):
 class StockTechnicalIndicators(BaseModel):
     moving_average_50d: float
     moving_average_200d: float
-    rsi: float
-
+    volume: Decimal
 class StockAnalysisResult(BaseModel):
     ticker: str
     stock_name: str
@@ -79,6 +79,7 @@ class StockAnalyzer:
             "200d_avg": info.get("twoHundredDayAverage"),
             "industry": info.get("industry"),
             "sector": info.get("sector"),
+            "stock_name": info.get("shortName", "Unknown Company"),
             "score": f"{(5 - (info.get("recommendationMean", 0))) * 25:.2f}",  # Scale to 100
         }
         return data

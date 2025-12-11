@@ -98,6 +98,9 @@ So instead of peratio.lasttwelvemonths just replace it with P/E and ebidta1yrgro
 
 You are going to apply these filters for either the Saudi or American stock markets. You need to adjust the values accordingly, so for example an undervalued company might be P/E < 15 but for Saudi stock market it might be P/E < 12
 DO NOT USE ANY KIND OF STRING QUOTES FOR THE SQLQUERY. No ` or ' or " just pure text because it messes up the string processing
+
+Use as least filters as possible do not overuse them..
+Having more is better than having less / none
 Now, generate the filters for the following user input.
 
 {nlp_input}
