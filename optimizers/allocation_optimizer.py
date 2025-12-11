@@ -37,29 +37,29 @@ class PortfolioOptimizer:
 
     def __init__(self, tickers: list[str], stock_market: StockMarket) -> None:
         try:
-            logger.info(f"Initializing PortfolioOptimizer with tickers={tickers}, market={stock_market}")
+            logger.info("Initializing PortfolioOptimizer with tickers=%s, market=%s", tickers, stock_market)
             self.tickers = tickers
             self.stock_market = stock_market
             self.dates = None
             
             logger.debug("Extracting historical data...")
             tickers_df = self.__extract_data()
-            logger.debug(f"Data shape after extraction: {tickers_df.shape}")
+            logger.debug("Data shape after extraction: %s", tickers_df.shape)
             
             logger.debug("Normalizing data...")
             self.normalized_df = self.__normalize_data(tickers_df)
-            logger.debug(f"Normalized data shape: {self.normalized_df.shape}")
+            logger.debug("Normalized data shape: %s", self.normalized_df.shape)
             
             self.mean_returns = np.array([self.normalized_df.mean()[ticker] for ticker in self.tickers])
-            logger.debug(f"Mean returns: {self.mean_returns}")
+            logger.debug("Mean returns: %s", self.mean_returns)
             
             self.cov = np.array(self.normalized_df.cov())
-            logger.debug(f"Covariance matrix shape: {self.cov.shape}")
+            logger.debug("Covariance matrix shape: %s", self.cov.shape)
             
             self.n = len(self.tickers)
-            logger.info(f"PortfolioOptimizer initialized successfully with {self.n} tickers")
+            logger.info("PortfolioOptimizer initialized successfully with %d tickers", self.n)
         except Exception as e:
-            logger.error(f"Error during initialization: {str(e)}", exc_info=True)
+            logger.error("Error during initialization: %s", str(e), exc_info=True)
             raise
 
     
@@ -69,7 +69,7 @@ class PortfolioOptimizer:
         - market: StockMarket Enum (US or SA).
         """
         try:
-            logger.debug(f"Starting data extraction for market: {self.stock_market}")
+            logger.debug("Starting data extraction for market: %s", self.stock_market)
             
             # 1. Adjust tickers based on the selected market
             formatted_tickers = []
@@ -78,18 +78,18 @@ class PortfolioOptimizer:
                     # Append suffix for Saudi market (e.g., 1120 -> 1120.SR)
                     formatted_ticker = f"{ticker}.{self.stock_market.value}"
                     formatted_tickers.append(formatted_ticker)
-                    logger.debug(f"Formatted ticker {ticker} to {formatted_ticker} for Saudi market")
+                    logger.debug("Formatted ticker %s to %s for Saudi market", ticker, formatted_ticker)
                 else:
                     # Default for US (no suffix needed usually)
                     formatted_tickers.append(ticker)
-                    logger.debug(f"Using ticker {ticker} for US market")
+                    logger.debug("Using ticker %s for US market", ticker)
 
-            logger.info(f"Downloading data for: {formatted_tickers}")
+            logger.info("Downloading data for: %s", formatted_tickers)
             
             # 2. Download data in batch (more efficient than looping)
             # using 'auto_adjust=True' gets the Adjusted Close directly as 'Close'
             data = yf.download(formatted_tickers, period="1y", auto_adjust=True, progress=False)
-            logger.debug(f"Downloaded data shape: {data.shape}")
+            logger.debug("Downloaded data shape: %s", data.shape)
 
             if len(self.tickers) == 1:
                 logger.debug("Single ticker detected, restructuring data")
@@ -97,29 +97,29 @@ class PortfolioOptimizer:
                 prices_df.columns = self.tickers
             else:
                 prices_df = data['Close']
-                logger.debug(f"Multiple tickers detected, columns before rename: {list(prices_df.columns)}")
+                logger.debug("Multiple tickers detected, columns before rename: %s", list(prices_df.columns))
                 
                 if self.stock_market == StockMarket.SA:
                     prices_df.columns = [col.replace(f".{self.stock_market.value}", "") for col in prices_df.columns]
-                    logger.debug(f"Columns after rename: {list(prices_df.columns)}")
+                    logger.debug("Columns after rename: %s", list(prices_df.columns))
 
             # Ensure no missing data (forward fill then drop remaining)
             prices_df = prices_df.ffill().dropna()
-            logger.info(f"Data extraction complete. Final shape: {prices_df.shape}, Missing values: {prices_df.isnull().sum().sum()}")
+            logger.info("Data extraction complete. Final shape: %s, Missing values: %d", prices_df.shape, prices_df.isnull().sum().sum())
             return prices_df
         except Exception as e:
-            logger.error(f"Error during data extraction: {str(e)}", exc_info=True)
+            logger.error("Error during data extraction: %s", str(e), exc_info=True)
             raise
 
     def __normalize_data(self, tickers_df: pd.DataFrame) -> pd.DataFrame:
         try:
-            logger.debug(f"Normalizing data with shape: {tickers_df.shape}")
+            logger.debug("Normalizing data with shape: %s", tickers_df.shape)
             normalized = tickers_df.pct_change().dropna()
-            logger.debug(f"Normalized data shape: {normalized.shape}")
-            logger.debug(f"Normalized data statistics:\n{normalized.describe()}")
+            logger.debug("Normalized data shape: %s", normalized.shape)
+            logger.debug("Normalized data statistics:\n%s", normalized.describe())
             return normalized
         except Exception as e:
-            logger.error(f"Error during data normalization: {str(e)}", exc_info=True)
+            logger.error("Error during data normalization: %s", str(e), exc_info=True)
             raise
     
     def _minimize_risks(self, daily_reward, budget: Decimal, allow_short=False):
@@ -130,7 +130,7 @@ class PortfolioOptimizer:
         - Optional: No short selling (w >= 0)
         """
         try:
-            logger.debug(f"Minimizing risks for daily_reward={daily_reward}, budget={budget}, allow_short={allow_short}")
+            logger.debug("Minimizing risks for daily_reward=%s, budget=%s, allow_short=%s", daily_reward, budget, allow_short)
             budget = float(budget)
             
             def objective(w):
@@ -152,19 +152,19 @@ class PortfolioOptimizer:
             
             # Initial guess: equal weights
             w0 = np.ones(self.n) / self.n
-            logger.debug(f"Initial weights: {w0}")
+            logger.debug("Initial weights: %s", w0)
             
             # Optimize
             logger.debug("Starting optimization...")
             result = sco.minimize(objective, w0, method='SLSQP', bounds=bounds, constraints=constraints)
             
             if not result.success:
-                logger.warning(f"Optimization did not converge. Message: {result.message}")
+                logger.warning("Optimization did not converge. Message: %s", result.message)
             else:
-                logger.debug(f"Optimization successful")
+                logger.debug("Optimization successful")
             
             w = result.x
-            logger.debug(f"Optimized weights: {w}")
+            logger.debug("Optimized weights: %s", w)
             
             # Build results
             results = {self.tickers[i]: float(w[i]) * budget for i in range(self.n)}
@@ -173,11 +173,11 @@ class PortfolioOptimizer:
             results['daily_std'] = float(np.sqrt(w @ self.cov @ w) * budget)
             results['optimization_success'] = result.success
             
-            logger.debug(f"Results: variance={results['daily_variance']}, return={results['daily_return']}, std={results['daily_std']}")
+            logger.debug("Results: variance=%s, return=%s, std=%s", results['daily_variance'], results['daily_return'], results['daily_std'])
             
             return results
         except Exception as e:
-            logger.error(f"Error during risk minimization: {str(e)}", exc_info=True)
+            logger.error("Error during risk minimization: %s", str(e), exc_info=True)
             raise
     
 
@@ -189,18 +189,18 @@ class PortfolioOptimizer:
         Returns: List of dictionaries with portfolio weights and statistics
         """
         try:
-            logger.info(f"Computing efficient frontier with n_points={n_points}, budget={budget}")
+            logger.info("Computing efficient frontier with n_points=%d, budget=%s", n_points, budget)
             min_return = np.min(self.mean_returns)
             max_return = np.max(self.mean_returns)
             budget = float(budget)
-            logger.debug(f"Return range: [{min_return}, {max_return}]")
+            logger.debug("Return range: [%s, %s]", min_return, max_return)
             
             target_returns = np.linspace(min_return, max_return, n_points)
             frontier = []
             
             for idx, target in enumerate(target_returns):
                 try:
-                    logger.debug(f"Processing frontier point {idx+1}/{n_points}, target_return={target}")
+                    logger.debug("Processing frontier point %d/%d, target_return=%s", idx+1, n_points, target)
                     result = self._minimize_risks(target, budget=budget, allow_short=allow_short)
                     if result['optimization_success']:
                         portfolio = {
@@ -212,17 +212,17 @@ class PortfolioOptimizer:
                                        if k in self.tickers}
                         }
                         frontier.append(portfolio)
-                        logger.debug(f"Successfully added portfolio to frontier")
+                        logger.debug("Successfully added portfolio to frontier")
                     else:
-                        logger.warning(f"Optimization failed for target return {target}")
+                        logger.warning("Optimization failed for target return %s", target)
                 except Exception as e:
-                    logger.warning(f"Error processing frontier point {idx}: {str(e)}")
+                    logger.warning("Error processing frontier point %d: %s", idx, str(e))
                     continue
             
-            logger.info(f"Efficient frontier computed with {len(frontier)} successful portfolios")
+            logger.info("Efficient frontier computed with %d successful portfolios", len(frontier))
             return frontier
         except Exception as e:
-            logger.error(f"Error computing efficient frontier: {str(e)}", exc_info=True)
+            logger.error("Error computing efficient frontier: %s", str(e), exc_info=True)
             raise
     
     def return_highest_sharpe_ratio(self, budget: Decimal, allow_short=False)->OptimizerResult:
@@ -232,10 +232,10 @@ class PortfolioOptimizer:
         Returns: Dictionary with portfolio weights and statistics
         """
         try:
-            logger.info(f"Finding highest Sharpe ratio portfolio with budget={budget}")
+            logger.info("Finding highest Sharpe ratio portfolio with budget=%s", budget)
             
             ef = self.efficient_frontier(budget=budget, allow_short=allow_short)
-            logger.debug(f"Efficient frontier contains {len(ef)} portfolios")
+            logger.debug("Efficient frontier contains %d portfolios", len(ef))
             
             if not ef:
                 logger.error("Efficient frontier is empty, cannot find best portfolio")
@@ -244,7 +244,7 @@ class PortfolioOptimizer:
             best_portfolio = None
         
             risk_free_rate = 0.03 / 252  # Assuming 3% annual risk-free rate
-            logger.debug(f"Risk-free rate (daily): {risk_free_rate}")
+            logger.debug("Risk-free rate (daily): %s", risk_free_rate)
 
             max_sharpe_ratio = -np.inf
             portfolio_index = -1
@@ -255,18 +255,18 @@ class PortfolioOptimizer:
                     std_dev = portfolio['std']
                     
                     if std_dev == 0:
-                        logger.warning(f"Portfolio {i} has zero std_dev, skipping")
+                        logger.warning("Portfolio %d has zero std_dev, skipping", i)
                         continue
                     
                     sharpe_ratio = (expected_return - risk_free_rate) / std_dev
-                    logger.debug(f"Portfolio {i}: return={expected_return}, std={std_dev}, sharpe={sharpe_ratio}")
+                    logger.debug("Portfolio %d: return=%s, std=%s, sharpe=%s", i, expected_return, std_dev, sharpe_ratio)
                     
                     if sharpe_ratio > max_sharpe_ratio:
                         max_sharpe_ratio = sharpe_ratio
                         portfolio_index = i
-                        logger.debug(f"New best Sharpe ratio: {max_sharpe_ratio}")
+                        logger.debug("New best Sharpe ratio: %s", max_sharpe_ratio)
                 except Exception as e:
-                    logger.warning(f"Error calculating Sharpe ratio for portfolio {i}: {str(e)}")
+                    logger.warning("Error calculating Sharpe ratio for portfolio %d: %s", i, str(e))
                     continue
 
             best_portfolio = ef[portfolio_index] if portfolio_index >= 0 else None
@@ -277,9 +277,9 @@ class PortfolioOptimizer:
             
             allocation_budget = {k: v * float(budget) for k, v in best_portfolio['weights'].items()} if best_portfolio else None
             
-            logger.info(f"Best portfolio found with Sharpe ratio: {max_sharpe_ratio}")
-            logger.debug(f"Best portfolio weights: {best_portfolio['weights']}")
-            logger.debug(f"Best portfolio allocation: {allocation_budget}")
+            logger.info("Best portfolio found with Sharpe ratio: %s", max_sharpe_ratio)
+            logger.debug("Best portfolio weights: %s", best_portfolio['weights'])
+            logger.debug("Best portfolio allocation: %s", allocation_budget)
             
             result = OptimizerResult(
                 weights=best_portfolio['weights'] if best_portfolio else {},
@@ -289,10 +289,10 @@ class PortfolioOptimizer:
                 volatility=best_portfolio.get("daily_variance") * np.sqrt(252)
             )
             
-            logger.info(f"Returning OptimizerResult with sharpe_ratio={result.sharpe_ratio}, volatility={result.volatility}")
+            logger.info("Returning OptimizerResult with sharpe_ratio=%s, volatility=%s", result.sharpe_ratio, result.volatility)
             return result
         except Exception as e:
-            logger.error(f"Error finding highest Sharpe ratio: {str(e)}", exc_info=True)
+            logger.error("Error finding highest Sharpe ratio: %s", str(e), exc_info=True)
             raise
         
 
@@ -308,8 +308,8 @@ if __name__ == '__main__':
         
         result = optimizer.return_highest_sharpe_ratio(budget=Decimal('10000'))
         logger.info("Optimization completed successfully")
-        logger.info(f"Result: {result}")
+        logger.info("Result: %s", result)
         print(result)
     except Exception as e:
-        logger.error(f"Fatal error in main: {str(e)}", exc_info=True)
+        logger.error("Fatal error in main: %s", str(e), exc_info=True)
         raise
