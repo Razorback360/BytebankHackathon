@@ -6,6 +6,7 @@ from decimal import Decimal
 import yfinance as yf
 from yfinance import EquityQuery
 import io
+import asyncio
 
 # Import your custom classes
 # Adjust imports based on your actual directory structure
@@ -225,9 +226,33 @@ async def screen_stocks(request: ScreenerRequest):
         print(f"Screener Result: {result}")
         
         # 5. Extract tickers from the result
-        tickers = []
         if result and 'quotes' in result:
-            tickers = [get_stock_metadata(quote['symbol']) for quote in result['quotes']]
+            symbols = [quote['symbol'] for quote in result['quotes']]
+            
+            # Use a Semaphore to limit concurrency to 250 (as requested)
+            # This prevents opening too many sockets at once if the list grows
+            sem = asyncio.Semaphore(250)
+
+            async def fetch_stock_safe(sym):
+                async with sem:
+                    # asyncio.to_thread runs the synchronous yfinance code in a separate thread
+                    # preventing it from blocking the main event loop
+                    try:
+                        return await asyncio.to_thread(get_stock_metadata, sym)
+                    except Exception as e:
+                        print(f"Failed to fetch {sym}: {e}")
+                        return None
+
+            # Launch all tasks simultaneously
+            tasks = [fetch_stock_safe(sym) for sym in symbols]
+            
+            # gather waits for all to complete
+            results = await asyncio.gather(*tasks)
+            
+            # Filter out any failures (None values)
+            tickers = [r for r in results if r is not None]
+        else:
+            tickers = []
         # te
         print("i love u")
         return ScreenerResponse(
