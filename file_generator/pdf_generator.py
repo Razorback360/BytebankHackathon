@@ -204,9 +204,6 @@ class PDFReportGenerator:
         doc = SimpleDocTemplate(buffer, pagesize=A4,
                                 rightMargin=40, leftMargin=40,
                                 topMargin=40, bottomMargin=40)
-        doc = doc = SimpleDocTemplate(self.filename, pagesize=A4,
-                                rightMargin=40, leftMargin=40,
-                                topMargin=40, bottomMargin=40)
         doc.build(story)
         print(f"PDF generated successfully: {self.filename}")
         buffer.seek(0)

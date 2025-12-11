@@ -232,7 +232,7 @@ async def screen_stocks(request: ScreenerRequest):
         print("i love u")
         return ScreenerResponse(
             data=tickers,
-            sqlQuery= filter_response.sqlQuery
+            sqlQuery= filter_response.get("sqlQuery")
         )
 
     except Exception as e:
