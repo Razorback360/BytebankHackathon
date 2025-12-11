@@ -286,7 +286,7 @@ class PortfolioOptimizer:
                 sharpe_ratio=max_sharpe_ratio,
                 budget_allocation=allocation_budget if allocation_budget else {},
                 target_return=best_portfolio.get("target_return"),
-                volatility=best_portfolio.get("daily_variance") * np.sqrt(252)
+                volatility=best_portfolio.get("variance") * np.sqrt(252)
             )
             
             logger.info("Returning OptimizerResult with sharpe_ratio=%s, volatility=%s", result.sharpe_ratio, result.volatility)
