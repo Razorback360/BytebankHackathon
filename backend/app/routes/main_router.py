@@ -229,7 +229,8 @@ async def screen_stocks(request: ScreenerRequest):
         tickers = []
         if result and 'quotes' in result:
             tickers = [get_stock_metadata(quote['symbol']) for quote in result['quotes']]
-        
+        # te
+        print("i love u")
         return ScreenerResponse(
             data=tickers,
             sqlQuery= filter_response.sqlQuery
